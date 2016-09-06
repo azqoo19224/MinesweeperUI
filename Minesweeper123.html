@@ -56,7 +56,7 @@ var maxCount = 0;
 var zCount;
 //在玩一次
 function again() {
-    location.href='https://azqooo-azqoo19224.c9users.io/Minesweeper/Minesweeper123.php';
+    location.href='https://azqooo-azqoo19224.c9users.io/Minesweeper/Minesweeper123.html';
 }
 //開始遊戲
 function btnOk() {
@@ -75,7 +75,7 @@ function getData() {
     $.ajax(
     {
         type:"GET",
-        url:"text.php?maxBomb="+$maxBomb+"&length="+$length+"&width="+$width,
+        url:"s.php?maxBomb="+$maxBomb+"&length="+$length+"&width="+$width,
         dataType:"text",
         error:function(Xhr)
         {
@@ -117,7 +117,7 @@ function go(){
                         $(this).css("background-color","#FF0000");
                         alert("你炸掉了! 哈哈哈哈哈哈哈哈 ^^");
 
-                        location.href='https://azqooo-azqoo19224.c9users.io/Minesweeper/Minesweeper123.php';
+                        location.href='https://azqooo-azqoo19224.c9users.io/Minesweeper/Minesweeper123.html';
                     }
                     else if ($(this).val() == "0") {
                         var $x = Number($(this).attr('id'));
