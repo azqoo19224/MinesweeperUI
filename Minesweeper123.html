@@ -163,7 +163,15 @@ function go(){
         //破關顯示
         function endGame(){
                 alert("恭喜破關~");
-                 $("#again").show();
+                $("#showMax").text("猜除完畢");
+                maxCount = 0;
+                for (i=0; i < $length*$width; i++) {
+                    if ($("#"+i).val() == "M") {
+                        $("#"+i).text("M");
+                         $("#"+i).css("background-color","#FF0000");
+                    }
+                }
+                $("#again").show();
                 
         }
         //0相鄰連開
