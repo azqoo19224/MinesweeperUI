@@ -16,27 +16,33 @@
 	}
 </style>
 <body >
-    <div id="showBlock"></div>
-    <div id="form">
-        <form>
-            <table align='center' valign="middle">
-                
+    <div id="showBlock" align='center' valign="middle"></div>
+    <div id="form" align='center' valign="middle">
+            <!--<table align='center' valign="middle">-->
             <tr>
-            <td><input type="text" id = "maxBomb" name="maxBomb" value='10'/></td><td>炸彈數</td>
-            </tr>
-            <tr>
-            <td><input type="text" id = "length" name="length" value='10'/></td><td>長</td>
-            </tr>
-            <tr>
-            <td><input type="text" id = "width" name="width" value='10'/></td><td>寬</td>
-            </tr>
+                <input type="radio" id = "radio" name = "radio" checked="true" value="1"> 初級 9*9 10M<br>
+                <input type="radio" id = "radio" name = "radio" value="2"> 中級 16*16 40M<br>
+                <input type="radio" id = "radio" name = "radio" value="3"> 高級 16*30 99M<br>
+                <input type="radio" id = "radio" name = "radio" value="4"> 自訂<br>
+            <tr/>    
+            <div id = "data" style="display: none">
+                <tr>
+                <td><input type="text" id = "maxBomb" name="maxBomb" value='10'/></td><td>炸彈數</td>
+                </tr>
+                <tr>
+                <td><input type="text" id = "length" name="length" value='10'/></td><td>長</td>
+                </tr>
+                <tr>
+                <td><input type="text" id = "width" name="width" value='10'/></td><td>寬</td>
+                </tr>
+            <!--</table>-->
+            </div>
             <tr>
             <td colspan = 2><input type="button" onclick="btnOk()" value="開始遊戲"/></td>
             </tr>
-            </table>
-        </form>
+
     </div>
-    <div id = "info" style="display: none">
+    <div id = "info" style="display: none" align='center' valign="middle">
         <h1 id="bob">剩餘炸彈:</h1>
         <h1 id="showMax"></h1>
         <input type="hidden" id="zCount" value=""/>
@@ -46,6 +52,7 @@
 
 </body>
 <script>
+
 var con=0;
 var v;
 var $maxBomb;
@@ -54,6 +61,24 @@ var $width;
 var $count;
 var maxCount = 0;
 var zCount;
+var countX = 0;
+var lll = false;
+var rrr = false;
+var checkID;
+var openID = [];
+var range;
+range = $('input[name=radio]:checked').val();
+//初始設MAP大小
+$(":radio").change(function(){
+    range = $('input[name=radio]:checked').val();
+    if($('input[name=radio]:checked').val() == 4){
+        $("#data").show();
+    } else {
+        $("#data").hide();
+    }
+});
+
+
 //在玩一次
 function again() {
     location.href='https://azqooo-azqoo19224.c9users.io/Minesweeper/Minesweeper123.html';
@@ -67,31 +92,46 @@ function btnOk() {
 }
 //抓取地圖資訊 && 設值
 function getData() { 
-    $maxBomb = $("#maxBomb").val();
-    $length = $("#length").val();
+    if(range == "1"){
+        $("#maxBomb").val(10);
+        $("#length").val(9);
+        $("#width").val(9);
+    } else if (range == "2") {
+        $("#maxBomb").val(40);
+        $("#length").val(16);
+        $("#width").val(16);
+    } else if (range == "3"){
+        $("#maxBomb").val(99);
+        $("#length").val(16);
+        $("#width").val(30);
+    } 
+    
+    $maxBomb = Number($("#maxBomb").val());
+    $length = Number($("#length").val());
     $width = Number($("#width").val());
+
+    
     zCount = $("#maxBomb").val();
     $count = $width * $length;
+    
     $.ajax(
     {
         type:"GET",
         url:"s.php?maxBomb="+$maxBomb+"&length="+$length+"&width="+$width,
         dataType:"text",
-        error:function(Xhr)
-        {
+        error:function(Xhr) {
             alert("error");
         },
-        success:function(json)
-        { 
-            var arr=JSON.parse(json);
+        success:function(json) { 
+            var arr = JSON.parse(json);
             var str = arr.str.split(",");
             var val = arr.val.split(",");
 
-            for(i = 0; i < str.length; i++){
+            for (i = 0; i < str.length; i++) {
                 if (con%$width == 0) {
                     $("#showBlock").append("<br>");
                 }
-                $("#showBlock").append("<button id='"+str[i]+"' value="+val[i]+">-</button>");
+                $("#showBlock").append("<button id='"+str[i]+"' value="+val[i]+">?</button>");
                 con++;
                 
             }
@@ -102,68 +142,289 @@ function getData() {
 }
 //取消右鍵選單
 $(function(){
-        $(document).bind("contextmenu",function(event){
+        $(document).bind("contextmenu",function(event) {
             return false;
         });
   });
-  
+ 
+
 //  點擊執行功能
 function go(){
-            $("button").mousedown(function(){
-            if (event.button == 0) {
-                    if ($(this).text() == "!"){
-                    } else if ($(this).val() == "M") {
-                        $(this).text($(this).val());
-                        $(this).css("background-color","#FF0000");
-                        alert("你炸掉了! 哈哈哈哈哈哈哈哈 ^^");
+    //點擊
+    $("button").mousedown(function() {
+     if(event.button == 0) {
+         lll= true;
+     }
+     
+     if(event.button == 2) {
+         rrr = true;
+     }
+     
+     if (event.button == 2 & lll == true || event.button == 0 & rrr == true) {
+        checkID = Number($(this).attr('id'));
+        if($(this).val() == "999"){
+            $("#"+checkID).css("background-color","#00FF00");
+            openLattice(changColorBlue);
+        }
+     }
+    });
+    
 
-                        location.href='https://azqooo-azqoo19224.c9users.io/Minesweeper/Minesweeper123.html';
-                    }
-                    else if ($(this).val() == "0") {
-                        var $x = Number($(this).attr('id'));
-                        $(this).text($(this).val());
-                        $(this).css("background-color","#FFFFFF");
-                        $(this).val("999");
-                        maxCount++;
-                        run($x);
-                        
-                        
-                    } else if($(this).val() == "999") {
-
-                    }    
-                    else {
-                        $(this).text($(this).val());
-                        maxCount++;
-                        $(this).val(999);
-                        $(this).css("background-color","#FFFFFF");
-                    }
-                        if(maxCount >= $length*$width-$maxBomb){
-                            endGame();
-                        }
+    $("button").mouseup(function() {
+        if (event.button == 0 && rrr == false) {
+                //! 無效
+                if ($(this).text() == "!" || $(this).val() == "999"){
+    
+                } else if ($(this).val() == "M") {
+                    openM(Number($(this).attr('id')));
+    
+                    location.href='https://azqooo-azqoo19224.c9users.io/Minesweeper/Minesweeper123.html';
                 }
-            if(event.button == 2){
-
-                if($(this).val() != 999){
-                    if($(this).text() == "!"){
-                        $(this).text("-");
-                        $(this).css("background-color","#000000");
-                        zCount++;
-                        $("#showMax").text(zCount);
-
-                    } else {
-                        $(this).text("!");
-                        $(this).css("background-color","#FF0000");
-                        zCount--;
-                        $("#showMax").text(zCount);
+                else if ($(this).val() == "0") {
+                    id = Number($(this).attr('id'));
+                    openOne(id);
+                    run(id);
                     
-                    }
+                    
+                } else {
+                    id = Number($(this).attr('id'));
+                    openOne(id);
+                }
+                //判斷獲勝條件
+                if (maxCount >= $length*$width-$maxBomb) {
+                    endGame();
                 }
             }
-        });
+            
+        if (event.button == 2 && lll == false) {
+    
+            if ($(this).val() != 999) {
+                if ($(this).text() == "!") {
+                    $(this).text("?");
+                    $(this).css("background-color","#000000");
+                    zCount++;
+                    $("#showMax").text(zCount);
+    
+                } else {
+                    $(this).text("!");
+                    $(this).css("background-color","#FF0000");
+                    zCount--;
+                    $("#showMax").text(zCount);
+                
+                }
+            }
+        }
+    
+        //鎖雙鍵
+        if(lll == true && rrr == true){
+    
+            if(lll == true){
+                lll= false;
+                rrr= false;
+                if($("#"+checkID).val() == "999")
+                checkBobm();
+            }
+        } 
+            if(event.button == 0){
+                lll= false;
+            }
+            if(event.button == 2){
+                rrr= false;
+            }
+        
+    
+
+            
+    });
+    
+    
+
+    function changColorBlue(id) {
+        $("#"+id).css("background-color","#0000FF");
+    } 
+
+    function changColorBlank(id) {
+        $("#"+id).css("background-color","#000000");
+    } 
+    //雙鍵>開格
+    function openLattice(changColor) {
+    	id1 = checkID -$width -1; 
+        id2 = checkID  - $width;
+        id3 = checkID + 1 - $width;
+        id4 = checkID - 1;
+        id5 = checkID + 1;
+        id6 = checkID + $width -1;
+        id7 = checkID + $width;
+        id8 = checkID + $width + 1;
+        bobobo=0;
+        
+        if(checkID%$width == 0) {
+        	if($("#"+id2).text() == "!") {
+        		bobobo++;
+        	} else if(id2>=0 && $("#"+id2).val() != "999"){
+            	changColor(id2);
+            	openID.unshift(id2);
+            }
+        	if($("#"+id3).text() == "!") {
+        		bobobo++;
+        	} else if (id3>=0 && $("#"+id3).val() != "999") {
+            	changColor(id3);
+            	openID.unshift(id3);
+            }
+        	if($("#"+id5).text() == "!") {
+        		bobobo++;
+        	} else if (id5<$width*$length && $("#"+id5).val() != "999") {
+            	changColor(id5);
+            	openID.unshift(id5);
+            }
+        	
+        	if($("#"+id7).text() == "!") {
+        		bobobo++;
+        	} else if(id7<$width*$length && $("#"+id7).val() != "999") {
+            	changColor(id7);
+            	openID.unshift(id7);
+            }
+        	
+        	if($("#"+id8).text() == "!") {
+        		bobobo++;
+        	} else if(id8<$width*$length && $("#"+id8).val() != "999") {
+            	changColor(id8);
+            	openID.unshift(id8);
+            }
+        } else if(checkID%$width == $width-1) {
+        	if($("#"+id1).text() == "!"){
+        		bobobo++;
+        	} else if(id1>=0 && $("#"+id1).val() != "999"){
+            	changColor(id1);
+            	openID.unshift(id1);
+            }
+        	
+        	if ($("#"+id2).text() == "!") {
+        		bobobo++;
+        	} else if(id2>=0 && $("#"+id2).val() != "999"){
+            	changColor(id2);
+            	openID.unshift(id2);
+            }
+        	if ($("#"+id4).text() == "!") {
+        		bobobo++;
+        	} else if (id4<$width*$length && $("#"+id4).val() != "999") {
+            	changColor(id4);
+            	openID.unshift(id4);
+            }
+        	if ($("#"+id6).text() == "!") {
+        		bobobo++;
+        	} else if(id6<$width*$length && $("#"+id6).val() != "999"){
+            	changColor(id6);
+            	openID.unshift(id6);
+            }
+        	
+        	if ($("#"+id7).text() == "!") {
+        		bobobo++;
+        	} else if(id7<$width*$length && $("#"+id7).val() != "999"){
+            	changColor(id7);
+            	openID.unshift(id7);
+            }
+        } else {
+        	if($("#"+id1).text() == "!"){
+        		bobobo++;
+        	} else if(id1>=0 && $("#"+id1).val() != "999"){
+            	changColor(id1);
+            	openID.unshift(id1);
+            }
+        	
+        	if($("#"+id2).text() == "!"){
+        		bobobo++;
+        	} else if(id2>=0 && $("#"+id2).val() != "999"){
+            	changColor(id2);
+            	openID.unshift(id2);
+            }
+        	
+        	if($("#"+id3).text() == "!"){
+        		bobobo++;
+        	} else if(id3>=0 && $("#"+id3).val() != "999"){
+            	changColor(id3);
+            	openID.unshift(id3);
+            }
+        	if($("#"+id4).text() == "!"){
+        		bobobo++;
+        	} else if (id4<$width*$length && $("#"+id4).val() != "999") {
+            	changColor(id4);
+            	openID.unshift(id4);
+            }
+        	
+        	if($("#"+id5).text() == "!"){
+        		bobobo++;
+        	} else if (id5<$width*$length && $("#"+id5).val() != "999") {
+            	changColor(id5);
+            	openID.unshift(id5);
+            }
+        	
+        	if($("#"+id6).text() == "!"){
+        		bobobo++;
+        	} else if (id6<$width*$length && $("#"+id6).val() != "999") {
+            	changColor(id6);
+            	openID.unshift(id6);
+            }
+        	
+        	if($("#"+id7).text() == "!"){
+        		bobobo++;
+        	} else if(id7<$width*$length && $("#"+id7).val() != "999"){
+            	changColor(id7);
+            	openID.unshift(id7);
+        	}
+        	
+        	if($("#"+id8).text() == "!"){
+        		bobobo++;
+        	} else if(id8<$width*$length && $("#"+id8).val() != "999"){
+            	changColor(id8);
+            	openID.unshift(id8);
+            }
+        }	
+        	if(changColor == changColorBlue){
+        		openID = [];
+        	}
+        	//掃雷判斷
+        	if(changColor==changColorBlank){
+        		if(bobobo == $("#"+checkID).text()) {
+        			for(i = 0;i < openID.length;i++) {
+        			    if($("#"+openID[i]).val() == "999"){
+        			        
+        			    }else if($("#"+openID[i]).val() == "0") {
+        			        openOne(openID[i]);
+        			        run(openID[i]);
+        			    } else if ($("#"+openID[i]).val() != "M"){
+        				    openOne(openID[i]);
+        			    } else {
+        			        openM(openID[i]);
+        			    }
+        			}
+        			//判斷獲勝條件
+                    if (maxCount >= $length*$width-$maxBomb) {
+                        endGame();
+                    }
+        			openID = [];
+        		}
+        	}
+        
+    }
+    
+        function openM(id) {
+            $("#"+id).text($("#"+id).val());
+            $("#"+id).css("background-color","#FF0000");
+            alert("你炸掉了! 哈哈哈哈哈哈哈哈 ^^");
+        }
+        
+            
+        function checkBobm() {
+            	$("#"+checkID).css("background-color","#FFFFFF");
+            	openLattice(changColorBlank);
+        }
+            
+    
         //破關顯示
         function endGame(){
                 alert("恭喜破關~");
-                $("#showMax").text("猜除完畢");
+                $("#showMax").text("拆除完畢");
                 maxCount = 0;
                 for (i=0; i < $length*$width; i++) {
                     if ($("#"+i).val() == "M") {
@@ -174,8 +435,17 @@ function go(){
                 $("#again").show();
                 
         }
+        //單開
+        function openOne($x){
+            $("#"+$x).text($("#"+$x).val());
+            $("#"+$x).css("background-color","#FFFFFF");
+            $("#"+$x).val("999");
+            maxCount++;
+        }
+        
+        
         //0相鄰連開
-        function open($x) {
+        function openZero($x) {
             if ($("#"+$x).val() == "0" && $("#"+$x).text() != "!") {
                 $("#"+$x).text($("#"+$x).val());
                 $("#"+$x).css("background-color","#FFFFFF");
@@ -183,7 +453,7 @@ function go(){
                 maxCount++;
                 run($x);
            
-            } else if($("#"+$x).text() != "!"){ 
+            } else if ($("#"+$x).text() != "!") { 
                 if($("#"+$x).val() != "999")
                 maxCount++;
                 $("#"+$x).text($("#"+$x).val());
@@ -191,7 +461,7 @@ function go(){
                 $("#"+$x).css("background-color","#FFFFFF");
             }
         }
-    //判斷位置    
+        //判斷位置    
         function run($x) {
             var z1 = -1;
             var z2 = -1;
@@ -202,7 +472,7 @@ function go(){
             var z7 = -1;
             var z8 = -1;
             //最左邊
-            if($x%$width == 0) {
+            if ($x%$width == 0) {
                  z2 = $x-$width;//上
                  z3 = $x-$width+1;//右上
                  z5 = $x+1;//右
@@ -210,17 +480,17 @@ function go(){
                  z8 = $x+$width+1;//右下
                 
                 if($count > z7 && z7 > -1 && $("#"+z7).val() != "999")
-                    open(z7);
+                    openZero(z7);
                 if($count > z2 && z2 > -1 && $("#"+z2).val() != "999")
-                    open(z2);
+                    openZero(z2);
                 if($count > z5 && z5 > -1 && $("#"+z5).val() != "999")
-                    open(z5);
+                    openZero(z5);
                 if($count > z8 && z8 > -1 && $("#"+z8).val() != "999")
-                    open(z8);
+                    openZero(z8);
                 if($count > z3 && z3 > -1 && $("#"+z3).val() != "999")
-                    open(z3);
+                    openZero(z3);
             //最右邊
-            } else if ($x%$width == $width-1){
+            } else if ($x%$width == $width-1) {
                  z1 = $x-$width-1;//左上
                  z2 = $x-$width;//上
                  z4 = $x-1;//左
@@ -228,25 +498,25 @@ function go(){
                  z7 = $x+$width;//下
 
                 if($count > z1 && z1 >-1 && $("#"+z1).val() != "999"){
-                    open(z1);
+                    openZero(z1);
                 }
                 if($count > z2 && z2 >-1 && $("#"+z2).val() != "999"){
-                    open(z2);
+                    openZero(z2);
                 }
                 if($count > z4 && z4 >-1 && $("#"+z4).val() != "999"){
-                    open(z4);
+                    openZero(z4);
                 }
                 if($count > z6 && z6 >-1 && $("#"+z6).val() != "999"){
-                    open(z6);
+                    openZero(z6);
                 }
                 if($count > z7 && z7 >-1 && $("#"+z7).val() != "999") {
-                    open(z7);
+                    openZero(z7);
                 }
             } else {
                  search($x);
             }
             //遞迴
-            function search(){
+            function search() {
                 z1 = $x-$width-1;
                 z2 = $x-$width;
                 z3 = $x-$width+1;
@@ -257,21 +527,21 @@ function go(){
                 z8 = $x+$width+1;
             
                 if($count > z1 && z1 >-1 && $("#"+z1).val() != "999")
-                    open(z1);
+                    openZero(z1);
                 if($count > z2 && z2 >-1 && $("#"+z2).val() != "999")
-                    open(z2);
+                    openZero(z2);
                 if($count > z3 && z3 >-1 && $("#"+z3).val() != "999")
-                    open(z3);
+                    openZero(z3);
                 if($count > z4 && z4 >-1 && $("#"+z4).val() != "999")
-                    open(z4);
+                    openZero(z4);
                 if($count > z5 && z5 >-1 && $("#"+z5).val() != "999")
-                    open(z5);
+                    openZero(z5);
                 if($count > z6 && z6 >-1 && $("#"+z6).val() != "999")
-                    open(z6);
+                    openZero(z6);
                 if($count > z7 && z7 >-1 && $("#"+z7).val() != "999")
-                    open(z7);
+                    openZero(z7);
                 if($count > z8 && z8 >-1 && $("#"+z8).val() != "999")
-                    open(z8);
+                    openZero(z8);
                 
             }
         }

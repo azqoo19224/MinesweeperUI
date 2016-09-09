@@ -1,8 +1,11 @@
 <?php
 header("Content-Type:text/html; charset=utf-8");
+
+
 $maxBomb = $_GET["maxBomb"];
 $length = $_GET["length"];
 $width = $_GET["width"];
+
 
 
 
@@ -56,12 +59,12 @@ for ($x = 0; $x < $length; $x++){
 }
 $x=0;
 $y=0;
-$str;
-foreach ($arr as $value) {
+// $str;
+for ($i = 0; $i < $length; $i++){
     $y=0;
-    foreach ($value as $val) {
+    for ($j = 0; $j < $width; $j++){
         $str .= ($x * $width + $y).",";
-        $v .= $val.",";
+        $v .= $arr[$i][$j].",";
         $y++;
     }
     $x++;
