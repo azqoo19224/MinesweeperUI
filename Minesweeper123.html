@@ -67,11 +67,12 @@ var rrr = false;
 var checkID;
 var openID = [];
 var range;
+var btnL = false,btnR;
 range = $('input[name=radio]:checked').val();
 //初始設MAP大小
 $(":radio").change(function(){
     range = $('input[name=radio]:checked').val();
-    if($('input[name=radio]:checked').val() == 4){
+    if ($('input[name=radio]:checked').val() == 4){
         $("#data").show();
     } else {
         $("#data").hide();
@@ -92,7 +93,7 @@ function btnOk() {
 }
 //抓取地圖資訊 && 設值
 function getData() { 
-    if(range == "1"){
+    if (range == "1"){
         $("#maxBomb").val(10);
         $("#length").val(9);
         $("#width").val(9);
@@ -149,92 +150,122 @@ $(function(){
  
 
 //  點擊執行功能
-function go(){
+function go() {
     //點擊
     $("button").mousedown(function() {
-     if(event.button == 0) {
+    
+     if (event.button == 0 && lll == false) {
          lll= true;
-     }
+     } 
      
-     if(event.button == 2) {
+     if (event.button == 2 && rrr ==false) {
          rrr = true;
-     }
+     } 
      
-     if (event.button == 2 & lll == true || event.button == 0 & rrr == true) {
+      
+     
+     if ((event.button == 2 & lll == true || event.button == 0 & rrr == true ) && btnL == false) {
         checkID = Number($(this).attr('id'));
-        if($(this).val() == "999"){
+        btnL = true;
+ 
+        if ($(this).text() == "!") {
+            openLattice(changColorBlue);
+        } else if ($(this).val() == "999") {
+            $("#"+checkID).css("background-color","#00FF00");
+            openLattice(changColorBlue);
+        } else if ($(this).text() == "?") {
             $("#"+checkID).css("background-color","#00FF00");
             openLattice(changColorBlue);
         }
-     }
-    });
-    
+         
+        
+     } else if (event.button == 2 && lll != true) {
+        if ($(this).val() != 999) {
+            if ($(this).text() == "!") {
+                $(this).text("?");
+                $(this).css("background-color","#000000");
+                zCount++;
+                $("#showMax").text(zCount);
 
-    $("button").mouseup(function() {
-        if (event.button == 0 && rrr == false) {
-                //! 無效
-                if ($(this).text() == "!" || $(this).val() == "999"){
-    
-                } else if ($(this).val() == "M") {
-                    openM(Number($(this).attr('id')));
-    
-                    location.href='https://azqooo-azqoo19224.c9users.io/Minesweeper/Minesweeper123.html';
-                }
-                else if ($(this).val() == "0") {
-                    id = Number($(this).attr('id'));
-                    openOne(id);
-                    run(id);
-                    
-                    
-                } else {
-                    id = Number($(this).attr('id'));
-                    openOne(id);
-                }
-                //判斷獲勝條件
-                if (maxCount >= $length*$width-$maxBomb) {
-                    endGame();
-                }
-            }
+            } else {
+                $(this).text("!");
+                $(this).css("background-color","#FF0000");
+                zCount--;
+                $("#showMax").text(zCount);
             
-        if (event.button == 2 && lll == false) {
-    
-            if ($(this).val() != 999) {
-                if ($(this).text() == "!") {
-                    $(this).text("?");
-                    $(this).css("background-color","#000000");
-                    zCount++;
-                    $("#showMax").text(zCount);
-    
-                } else {
-                    $(this).text("!");
-                    $(this).css("background-color","#FF0000");
-                    zCount--;
-                    $("#showMax").text(zCount);
-                
-                }
             }
         }
-    
-        //鎖雙鍵
-        if(lll == true && rrr == true){
-    
-            if(lll == true){
-                lll= false;
-                rrr= false;
-                if($("#"+checkID).val() == "999")
-                checkBobm();
+    }
+    });
+ 
+    $("button").mousemove(function() {
+        if(btnL == true) {
+            if ($("#"+checkID).text() == "!") {
+                openLattice(changColorBlank);
+            }else if ($("#"+checkID).val() == "999") {
+                $("#"+checkID).css("background-color","#FFFFFF");
+                openLattice(changColorBlank);
+            } else if ($("#"+checkID).text() == "?") {
+                $("#"+checkID).css("background-color","#000000");
+                openLattice(changColorBlank);
             }
-        } 
-            if(event.button == 0){
-                lll= false;
-            }
-            if(event.button == 2){
-                rrr= false;
-            }
-        
-    
+            checkID = Number($(this).attr('id'));
 
+            if ($(this).text() == "!") {
+                openLattice(changColorBlue);
+            } else if ($(this).val() == "999") {
+                $("#"+checkID).css("background-color","#00FF00");
+                openLattice(changColorBlue);
+            } else if ($(this).text() == "?") {
+                $("#"+checkID).css("background-color","#00FF00");
+                openLattice(changColorBlue);
+            }
+        }    
             
+    });
+        
+    $("button").mouseup(function() {
+        if (rrr == true && lll == true && btnL == true) {
+            if (event.button == 0) {
+                if ($("#"+checkID).text() == "!") {
+                    openLattice(changColorBlank);
+                }else if ($("#"+checkID).val() == "999") {
+                    $("#"+checkID).css("background-color","#FFFFFF");
+                    openLattice(changColorBlank);
+                } else if ($("#"+checkID).text() == "?") {
+                    $("#"+checkID).css("background-color","#000000");
+                    openLattice(changColorBlank);
+                }
+                lll = false;
+                rrr = false;
+                btnL = false;
+            } else {
+                
+            }
+        } else if (event.button == 0 && lll == true && rrr == false) {
+            //無效
+            if ($(this).text() == "!" || $(this).val() == "999") {
+
+            } else if ($(this).val() == "M") {
+                openM(Number($(this).attr('id')));
+            } else if ($(this).val() == "0") {
+                id = Number($(this).attr('id'));
+                openOne(id);
+                run(id);
+            } else {
+                id = Number($(this).attr('id'));
+                openOne(id);
+            }
+            //判斷獲勝條件
+            if (maxCount >= $length*$width-$maxBomb) {
+                endGame();
+            }
+            
+            lll= false;
+        } else if (event.button == 2 && rrr == true && lll == false) {
+            rrr= false;
+        } 
+
     });
     
     
@@ -248,7 +279,7 @@ function go(){
     } 
     //雙鍵>開格
     function openLattice(changColor) {
-    	id1 = checkID -$width -1; 
+    	id1 = checkID - $width -1; 
         id2 = checkID  - $width;
         id3 = checkID + 1 - $width;
         id4 = checkID - 1;
@@ -258,141 +289,142 @@ function go(){
         id8 = checkID + $width + 1;
         bobobo=0;
         
-        if(checkID%$width == 0) {
-        	if($("#"+id2).text() == "!") {
+        if (checkID%$width == 0) {
+        	if ($("#"+id2).text() == "!" || ($("#"+id2).text() == "M")) {
         		bobobo++;
-        	} else if(id2>=0 && $("#"+id2).val() != "999"){
+        	} else if (id2>=0 && $("#"+id2).val() != "999" ){
             	changColor(id2);
             	openID.unshift(id2);
             }
-        	if($("#"+id3).text() == "!") {
+        	if ($("#"+id3).text() == "!" || ($("#"+id3).text() == "M")) {
         		bobobo++;
         	} else if (id3>=0 && $("#"+id3).val() != "999") {
             	changColor(id3);
             	openID.unshift(id3);
             }
-        	if($("#"+id5).text() == "!") {
+        	if ($("#"+id5).text() == "!" || ($("#"+id5).text() == "M")) {
         		bobobo++;
         	} else if (id5<$width*$length && $("#"+id5).val() != "999") {
             	changColor(id5);
             	openID.unshift(id5);
             }
         	
-        	if($("#"+id7).text() == "!") {
+        	if ($("#"+id7).text() == "!" || ($("#"+id7).text() == "M")) {
         		bobobo++;
-        	} else if(id7<$width*$length && $("#"+id7).val() != "999") {
+        	} else if (id7<$width*$length && $("#"+id7).val() != "999") {
             	changColor(id7);
             	openID.unshift(id7);
             }
         	
-        	if($("#"+id8).text() == "!") {
+        	if ($("#"+id8).text() == "!" || ($("#"+id8).text() == "M")) {
         		bobobo++;
-        	} else if(id8<$width*$length && $("#"+id8).val() != "999") {
+        	} else if (id8<$width*$length && $("#"+id8).val() != "999") {
             	changColor(id8);
             	openID.unshift(id8);
             }
-        } else if(checkID%$width == $width-1) {
-        	if($("#"+id1).text() == "!"){
+        } else if (checkID%$width == $width-1) {
+        	if ($("#"+id1).text() == "!" || ($("#"+id1).text() == "M")){
         		bobobo++;
-        	} else if(id1>=0 && $("#"+id1).val() != "999"){
+        	} else if (id1>=0 && $("#"+id1).val() != "999"){
             	changColor(id1);
             	openID.unshift(id1);
             }
         	
-        	if ($("#"+id2).text() == "!") {
+        	if ($("#"+id2).text() == "!" || ($("#"+id2).text() == "M")) {
         		bobobo++;
-        	} else if(id2>=0 && $("#"+id2).val() != "999"){
+        	} else if (id2>=0 && $("#"+id2).val() != "999"){
             	changColor(id2);
             	openID.unshift(id2);
             }
-        	if ($("#"+id4).text() == "!") {
+        	if ($("#"+id4).text() == "!" || ($("#"+id4).text() == "M")) {
         		bobobo++;
         	} else if (id4<$width*$length && $("#"+id4).val() != "999") {
             	changColor(id4);
             	openID.unshift(id4);
             }
-        	if ($("#"+id6).text() == "!") {
+        	if ($("#"+id6).text() == "!" || ($("#"+id6).text() == "M")) {
         		bobobo++;
-        	} else if(id6<$width*$length && $("#"+id6).val() != "999"){
+        	} else if (id6<$width*$length && $("#"+id6).val() != "999"){
             	changColor(id6);
             	openID.unshift(id6);
             }
         	
-        	if ($("#"+id7).text() == "!") {
+        	if ($("#"+id7).text() == "!" || ($("#"+id7).text() == "M")) {
         		bobobo++;
-        	} else if(id7<$width*$length && $("#"+id7).val() != "999"){
+        	} else if (id7<$width*$length && $("#"+id7).val() != "999"){
             	changColor(id7);
             	openID.unshift(id7);
             }
         } else {
-        	if($("#"+id1).text() == "!"){
+        	if ($("#"+id1).text() == "!" || ($("#"+id1).text() == "M")){
         		bobobo++;
-        	} else if(id1>=0 && $("#"+id1).val() != "999"){
+        	} else if (id1>=0 && $("#"+id1).val() != "999"){
             	changColor(id1);
             	openID.unshift(id1);
             }
         	
-        	if($("#"+id2).text() == "!"){
+        	if ($("#"+id2).text() == "!" || ($("#"+id2).text() == "M")){
         		bobobo++;
-        	} else if(id2>=0 && $("#"+id2).val() != "999"){
+        	} else if (id2>=0 && $("#"+id2).val() != "999"){
             	changColor(id2);
             	openID.unshift(id2);
             }
         	
-        	if($("#"+id3).text() == "!"){
+        	if ($("#"+id3).text() == "!" || ($("#"+id3).text() == "M")) {
         		bobobo++;
-        	} else if(id3>=0 && $("#"+id3).val() != "999"){
+        	} else if (id3>=0 && $("#"+id3).val() != "999") {
             	changColor(id3);
             	openID.unshift(id3);
             }
-        	if($("#"+id4).text() == "!"){
+            
+        	if ($("#"+id4).text() == "!" || ($("#"+id4).text() == "M")) {
         		bobobo++;
         	} else if (id4<$width*$length && $("#"+id4).val() != "999") {
             	changColor(id4);
             	openID.unshift(id4);
             }
         	
-        	if($("#"+id5).text() == "!"){
+        	if ($("#"+id5).text() == "!" || ($("#"+id5).text() == "M")) {
         		bobobo++;
         	} else if (id5<$width*$length && $("#"+id5).val() != "999") {
             	changColor(id5);
             	openID.unshift(id5);
             }
         	
-        	if($("#"+id6).text() == "!"){
+        	if ($("#"+id6).text() == "!" || ($("#"+id6).text() == "M")) {
         		bobobo++;
         	} else if (id6<$width*$length && $("#"+id6).val() != "999") {
             	changColor(id6);
             	openID.unshift(id6);
             }
         	
-        	if($("#"+id7).text() == "!"){
+        	if ($("#"+id7).text() == "!" || ($("#"+id7).text() == "M")) {
         		bobobo++;
-        	} else if(id7<$width*$length && $("#"+id7).val() != "999"){
+        	} else if (id7<$width*$length && $("#"+id7).val() != "999"){
             	changColor(id7);
             	openID.unshift(id7);
         	}
         	
-        	if($("#"+id8).text() == "!"){
+        	if ($("#"+id8).text() == "!" || ($("#"+id8).text() == "M")){
         		bobobo++;
-        	} else if(id8<$width*$length && $("#"+id8).val() != "999"){
+        	} else if (id8<$width*$length && $("#"+id8).val() != "999"){
             	changColor(id8);
             	openID.unshift(id8);
             }
         }	
-        	if(changColor == changColorBlue){
+        	if (changColor == changColorBlue) {
         		openID = [];
         	}
         	//掃雷判斷
-        	if(changColor==changColorBlank){
-        		if(bobobo == $("#"+checkID).text()) {
-        			for(i = 0;i < openID.length;i++) {
-        			    if($("#"+openID[i]).val() == "999"){
+        	if (changColor==changColorBlank) {
+        		if (bobobo == $("#"+checkID).text()) {
+        			for (i = 0;i < openID.length;i++) {
+        			    if ($("#"+openID[i]).val() == "999") {
         			        
-        			    }else if($("#"+openID[i]).val() == "0") {
+        			    } else if ($("#"+openID[i]).val() == "0") {
         			        openOne(openID[i]);
         			        run(openID[i]);
-        			    } else if ($("#"+openID[i]).val() != "M"){
+        			    } else if ($("#"+openID[i]).val() != "M") {
         				    openOne(openID[i]);
         			    } else {
         			        openM(openID[i]);
@@ -409,9 +441,12 @@ function go(){
     }
     
         function openM(id) {
-            $("#"+id).text($("#"+id).val());
-            $("#"+id).css("background-color","#FF0000");
-            alert("你炸掉了! 哈哈哈哈哈哈哈哈 ^^");
+            if(maxCount != 0) {
+                $("#"+id).text($("#"+id).val());
+                $("#"+id).css("background-color","#FF0000");
+                alert("你炸掉了! 哈哈哈哈哈哈哈哈 ^^");
+                again();
+            }
         }
         
             
@@ -426,6 +461,8 @@ function go(){
                 alert("恭喜破關~");
                 $("#showMax").text("拆除完畢");
                 maxCount = 0;
+                btnL = false;
+                
                 for (i=0; i < $length*$width; i++) {
                     if ($("#"+i).val() == "M") {
                         $("#"+i).text("M");
@@ -433,6 +470,7 @@ function go(){
                     }
                 }
                 $("#again").show();
+                
                 
         }
         //單開
@@ -454,7 +492,7 @@ function go(){
                 run($x);
            
             } else if ($("#"+$x).text() != "!") { 
-                if($("#"+$x).val() != "999")
+                if ($("#"+$x).val() != "999") 
                 maxCount++;
                 $("#"+$x).text($("#"+$x).val());
                 $("#"+$x).val("999");
@@ -479,15 +517,15 @@ function go(){
                  z7 = $x+$width;//下
                  z8 = $x+$width+1;//右下
                 
-                if($count > z7 && z7 > -1 && $("#"+z7).val() != "999")
+                if ($count > z7 && z7 > -1 && $("#"+z7).val() != "999")
                     openZero(z7);
-                if($count > z2 && z2 > -1 && $("#"+z2).val() != "999")
+                if ($count > z2 && z2 > -1 && $("#"+z2).val() != "999")
                     openZero(z2);
-                if($count > z5 && z5 > -1 && $("#"+z5).val() != "999")
+                if ($count > z5 && z5 > -1 && $("#"+z5).val() != "999")
                     openZero(z5);
-                if($count > z8 && z8 > -1 && $("#"+z8).val() != "999")
+                if ($count > z8 && z8 > -1 && $("#"+z8).val() != "999")
                     openZero(z8);
-                if($count > z3 && z3 > -1 && $("#"+z3).val() != "999")
+                if ($count > z3 && z3 > -1 && $("#"+z3).val() != "999")
                     openZero(z3);
             //最右邊
             } else if ($x%$width == $width-1) {
@@ -497,19 +535,19 @@ function go(){
                  z6 = $x+$width-1;//左下
                  z7 = $x+$width;//下
 
-                if($count > z1 && z1 >-1 && $("#"+z1).val() != "999"){
+                if ($count > z1 && z1 >-1 && $("#"+z1).val() != "999"){
                     openZero(z1);
                 }
-                if($count > z2 && z2 >-1 && $("#"+z2).val() != "999"){
+                if ($count > z2 && z2 >-1 && $("#"+z2).val() != "999"){
                     openZero(z2);
                 }
-                if($count > z4 && z4 >-1 && $("#"+z4).val() != "999"){
+                if ($count > z4 && z4 >-1 && $("#"+z4).val() != "999"){
                     openZero(z4);
                 }
-                if($count > z6 && z6 >-1 && $("#"+z6).val() != "999"){
+                if ($count > z6 && z6 >-1 && $("#"+z6).val() != "999"){
                     openZero(z6);
                 }
-                if($count > z7 && z7 >-1 && $("#"+z7).val() != "999") {
+                if ($count > z7 && z7 >-1 && $("#"+z7).val() != "999") {
                     openZero(z7);
                 }
             } else {
@@ -526,21 +564,21 @@ function go(){
                 z7 = $x+$width;
                 z8 = $x+$width+1;
             
-                if($count > z1 && z1 >-1 && $("#"+z1).val() != "999")
+                if ($count > z1 && z1 >-1 && $("#"+z1).val() != "999")
                     openZero(z1);
-                if($count > z2 && z2 >-1 && $("#"+z2).val() != "999")
+                if ($count > z2 && z2 >-1 && $("#"+z2).val() != "999")
                     openZero(z2);
-                if($count > z3 && z3 >-1 && $("#"+z3).val() != "999")
+                if ($count > z3 && z3 >-1 && $("#"+z3).val() != "999")
                     openZero(z3);
-                if($count > z4 && z4 >-1 && $("#"+z4).val() != "999")
+                if ($count > z4 && z4 >-1 && $("#"+z4).val() != "999")
                     openZero(z4);
-                if($count > z5 && z5 >-1 && $("#"+z5).val() != "999")
+                if ($count > z5 && z5 >-1 && $("#"+z5).val() != "999")
                     openZero(z5);
-                if($count > z6 && z6 >-1 && $("#"+z6).val() != "999")
+                if ($count > z6 && z6 >-1 && $("#"+z6).val() != "999")
                     openZero(z6);
-                if($count > z7 && z7 >-1 && $("#"+z7).val() != "999")
+                if ($count > z7 && z7 >-1 && $("#"+z7).val() != "999")
                     openZero(z7);
-                if($count > z8 && z8 >-1 && $("#"+z8).val() != "999")
+                if ($count > z8 && z8 >-1 && $("#"+z8).val() != "999")
                     openZero(z8);
                 
             }
